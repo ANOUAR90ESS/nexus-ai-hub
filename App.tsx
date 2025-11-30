@@ -498,14 +498,38 @@ const App: React.FC = () => {
                 </div>
               )}
 
-              <Suspense fallback={<LoadingFallback />}>
-                {currentView === AppView.LIVE_CHAT && <LiveDemo />}
-                {currentView === AppView.VEO_STUDIO && <VeoDemo />}
-                {currentView === AppView.IMAGE_STUDIO && <ImageStudio />}
-                {currentView === AppView.SMART_CHAT && <SearchChat />}
-                {currentView === AppView.AUDIO_LAB && <AudioLab />}
-                {currentView === AppView.LATEST_NEWS && <NewsFeed articles={news} />}
-                {currentView === AppView.PRICING && (
+              {currentView === AppView.LIVE_CHAT && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <LiveDemo />
+                </Suspense>
+              )}
+              {currentView === AppView.VEO_STUDIO && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <VeoDemo />
+                </Suspense>
+              )}
+              {currentView === AppView.IMAGE_STUDIO && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <ImageStudio />
+                </Suspense>
+              )}
+              {currentView === AppView.SMART_CHAT && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <SearchChat />
+                </Suspense>
+              )}
+              {currentView === AppView.AUDIO_LAB && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <AudioLab />
+                </Suspense>
+              )}
+              {currentView === AppView.LATEST_NEWS && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <NewsFeed articles={news} />
+                </Suspense>
+              )}
+              {currentView === AppView.PRICING && (
+                <Suspense fallback={<LoadingFallback />}>
                   <PricingPage 
                       onSelectPlan={(plan: string) => {
                           setSelectedPlan(plan);
@@ -513,32 +537,38 @@ const App: React.FC = () => {
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                       }} 
                   />
-                )}
-                {currentView === AppView.PAYMENT && (
+                </Suspense>
+              )}
+              {currentView === AppView.PAYMENT && (
+                <Suspense fallback={<LoadingFallback />}>
                   <PaymentPage 
                       plan={selectedPlan} 
                       onBack={() => setCurrentView(AppView.PRICING)}
                       onComplete={() => setCurrentView(AppView.HOME)} 
                   />
-                )}
-                {currentView === AppView.ADMIN && (
-                    <AdminDashboard 
-                        tools={tools} 
-                        news={news}
-                        user={user}
-                        onAddTool={handleAddTool} 
-                        onUpdateTool={handleUpdateTool}
-                        onAddNews={handleAddNews} 
-                        onUpdateNews={handleUpdateNews}
-                        onDeleteTool={handleDeleteTool}
-                        onDeleteNews={handleDeleteNews}
-                        onBack={() => setCurrentView(AppView.HOME)}
-                    />
-                )}
-                {currentView === AppView.PAGES && (
+                </Suspense>
+              )}
+              {currentView === AppView.ADMIN && (
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminDashboard 
+                      tools={tools} 
+                      news={news}
+                      user={user}
+                      onAddTool={handleAddTool} 
+                      onUpdateTool={handleUpdateTool}
+                      onAddNews={handleAddNews} 
+                      onUpdateNews={handleUpdateNews}
+                      onDeleteTool={handleDeleteTool}
+                      onDeleteNews={handleDeleteNews}
+                      onBack={() => setCurrentView(AppView.HOME)}
+                  />
+                </Suspense>
+              )}
+              {currentView === AppView.PAGES && (
+                <Suspense fallback={<LoadingFallback />}>
                   <GenericPage pageId={currentPageId} onBack={() => setCurrentView(AppView.HOME)} />
-                )}
-              </Suspense>
+                </Suspense>
+              )}
             </div>
 
             <Footer onNavigate={handleNavigation} />
