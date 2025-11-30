@@ -97,9 +97,8 @@ const App: React.FC = () => {
             setUser(profile);
           } else if (event === 'SIGNED_OUT') {
             setUser(null);
-            if (currentView === AppView.ADMIN) {
-              setCurrentView(AppView.HOME);
-            }
+            // Reset to home view on signout (using functional update to avoid closure)
+            setCurrentView(prev => prev === AppView.ADMIN ? AppView.HOME : prev);
           }
         });
         
