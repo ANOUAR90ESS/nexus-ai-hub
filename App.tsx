@@ -64,6 +64,7 @@ const App: React.FC = () => {
 
   // Check for API Key (AI Studio environment)
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [isAIStudio, setIsAIStudio] = useState(false);
 
   useEffect(() => {
     // Check if Supabase is configured
@@ -132,7 +133,8 @@ const App: React.FC = () => {
 
   const checkApiKeyAndLoadLocal = async () => {
       // Logic for AI Studio Env
-      if (window.aistudio && window.aistudio.hasSelectedApiKey) {
+      if (typeof window !== 'undefined' && window.aistudio && window.aistudio.hasSelectedApiKey) {
+          setIsAIStudio(true);
           const hasKey = await window.aistudio.hasSelectedApiKey();
           setHasApiKey(hasKey);
           if (hasKey && !isSupabaseConfigured) {
@@ -370,12 +372,14 @@ const App: React.FC = () => {
             
             <div className="flex items-center gap-2">
                 {/* API Key Connect for AI Studio - Only show warning if missing */}
-                {window.aistudio && !hasApiKey && (
+                {isAIStudio && !hasApiKey && (
                     <button 
                         onClick={async () => {
-                            await window.aistudio!.openSelectKey();
-                            const has = await window.aistudio!.hasSelectedApiKey();
-                            setHasApiKey(has);
+                            if (typeof window !== 'undefined' && window.aistudio) {
+                                await window.aistudio.openSelectKey();
+                                const has = await window.aistudio.hasSelectedApiKey();
+                                setHasApiKey(has);
+                            }
                         }}
                         className="text-xs bg-red-900/30 text-red-400 border border-red-900/50 hover:bg-red-900/50 px-3 py-1.5 rounded-lg transition-colors font-medium flex items-center gap-1"
                     >
