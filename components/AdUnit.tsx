@@ -35,7 +35,7 @@ const AdUnit: React.FC<AdUnitProps> = ({ format = 'horizontal', className = '', 
     return (
       <div className={`flex flex-col items-center justify-center my-6 ${className}`}>
         <div className="text-[10px] text-zinc-600 uppercase tracking-widest mb-1 w-full text-center">Advertisement</div>
-        <ins className="adsbygoogle" style={{ display: 'block' }}
+           <ins className="adsbygoogle block"
              data-ad-client="ca-pub-9054863881104831"
              data-ad-slot={String(adSlot)}
              data-ad-format="auto"
