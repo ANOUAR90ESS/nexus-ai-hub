@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Mail, Lock, LogIn, UserPlus, Loader2, AlertCircle } from 'lucide-react';
 import { signIn, signUp } from '../services/authService';
 
@@ -14,6 +14,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const emailInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!isOpen) return null;
 
@@ -38,9 +39,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     }
   };
 
+  // Focus the email field when the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => emailInputRef.current?.focus(), 0);
+    }
+  }, [isOpen]);
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative">
+      <div 
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        aria-describedby="auth-modal-desc"
+        tabIndex={-1}
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <button 
           type="button"
           onClick={onClose}
@@ -56,8 +72,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
              <div className="w-12 h-12 bg-indigo-600/20 rounded-xl flex items-center justify-center mx-auto mb-3">
                 {isLogin ? <LogIn className="w-6 h-6 text-indigo-500" /> : <UserPlus className="w-6 h-6 text-purple-500" />}
              </div>
-             <h2 className="text-2xl font-bold text-white">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
-             <p className="text-zinc-400 text-sm mt-1">
+             <h2 id="auth-modal-title" className="text-2xl font-bold text-white">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+             <p id="auth-modal-desc" className="text-zinc-400 text-sm mt-1">
                {isLogin ? 'Enter your credentials to access your account' : 'Sign up to start creating with Nexus AI'}
              </p>
           </div>
@@ -77,6 +93,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   type="email" 
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  ref={emailInputRef}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all"
                   placeholder="you@example.com"
                   required
