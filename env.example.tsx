@@ -1,0 +1,4 @@
+// Example configuration
+export const GEMINI_API_KEY="AIzaSyB6dGdy65RGEvEFqxZ4eIGF_VPWwzBvUT0";
+export const VITE_SUPABASE_URL='https://upfjytumummgbnzykijj.supabase.co';
+export const VITE_SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZmp5dHVtdW1tZ2JuenlraWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ0NTc4NzcsImV4cCI6MjA4MDAzMzg3N30.TFTJnFnRzi-zJ_W2c3laH3bZ19HcW4wcrmwinyJxAWI';
