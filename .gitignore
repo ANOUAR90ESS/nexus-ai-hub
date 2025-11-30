@@ -18,6 +18,9 @@ dist-ssr
 .env.production
 .env.development
 server/.env
+env.d.tsx
+env.example.tsx
+env*.tsx
 
 # Editor directories and files
 .vscode/*
