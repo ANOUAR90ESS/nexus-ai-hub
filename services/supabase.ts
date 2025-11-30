@@ -30,5 +30,13 @@ const supabaseKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
 export const isSupabaseConfigured = !!supabaseUrl && !!supabaseKey;
 
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: 'nexus-ai-auth',
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      }
+    })
   : null;

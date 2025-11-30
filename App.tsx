@@ -61,43 +61,61 @@ const App: React.FC = () => {
        return;
     }
 
-    // Auth Subscription
-    const checkUser = async () => {
-        const profile = await getCurrentUserProfile();
-        setUser(profile);
-    };
-    checkUser();
+    let authListener: any;
+    let unsubscribeTools: () => void;
+    let unsubscribeNews: () => void;
 
-    // Listen for Auth changes (Login/Logout)
-    const { data: authListener } = supabase?.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+    const initializeApp = async () => {
+      try {
+        // First, check for existing session
+        const { data: { session } } = await supabase!.auth.getSession();
+        
+        if (session) {
+          // Restore user profile from existing session
+          const profile = await getCurrentUserProfile();
+          setUser(profile);
+        }
+
+        // Listen for Auth changes (Login/Logout)
+        const { data } = supabase!.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth event:', event);
+          
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
             const profile = await getCurrentUserProfile();
             setUser(profile);
-        } else if (event === 'SIGNED_OUT') {
+          } else if (event === 'SIGNED_OUT') {
             setUser(null);
             if (currentView === AppView.ADMIN) {
-                setCurrentView(AppView.HOME);
+              setCurrentView(AppView.HOME);
             }
-        }
-    }) || { data: { subscription: { unsubscribe: () => {} } } };
+          }
+        });
+        
+        authListener = data;
 
+        // Subscribe to Realtime Data
+        unsubscribeTools = subscribeToTools((data) => {
+          setTools(data);
+        });
 
-    // Subscribe to Realtime Data
-    const unsubscribeTools = subscribeToTools((data) => {
-        setTools(data);
-    });
+        unsubscribeNews = subscribeToNews((data) => {
+          setNews(data);
+        });
 
-    const unsubscribeNews = subscribeToNews((data) => {
-        setNews(data);
-    });
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      }
+    };
+
+    initializeApp();
 
     // Check API Key for AI Studio features
     checkApiKeyAndLoadLocal();
 
     return () => {
-        unsubscribeTools();
-        unsubscribeNews();
-        authListener.subscription.unsubscribe();
+      if (unsubscribeTools) unsubscribeTools();
+      if (unsubscribeNews) unsubscribeNews();
+      if (authListener) authListener.subscription.unsubscribe();
     };
   }, []);
 
