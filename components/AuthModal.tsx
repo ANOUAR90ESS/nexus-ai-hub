@@ -16,7 +16,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [error, setError] = useState('');
   const emailInputRef = useRef<HTMLInputElement | null>(null);
 
-  if (!isOpen) return null;
+  // Focus the email field when the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => emailInputRef.current?.focus(), 0);
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +50,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       setTimeout(() => emailInputRef.current?.focus(), 0);
     }
   }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
