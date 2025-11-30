@@ -33,9 +33,9 @@ export const getCurrentUserProfile = async (): Promise<UserProfile | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Fetch the role from the 'profiles' table
+  // Fetch the role from the 'user_profiles' table
   const { data: profile, error } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .select('*')
     .eq('id', user.id)
     .single();
