@@ -42,7 +42,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative">
         <button 
+          type="button"
           onClick={onClose}
+          aria-label="Close authentication modal"
+          title="Close"
           className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
         >
           <X className="w-5 h-5" />
