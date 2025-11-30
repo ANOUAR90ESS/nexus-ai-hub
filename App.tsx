@@ -1,19 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 import Sidebar from './components/Sidebar';
 import ToolCard from './components/ToolCard';
-import LiveDemo from './components/demos/LiveDemo';
-import VeoDemo from './components/demos/VeoDemo';
-import ImageStudio from './components/demos/ImageStudio';
-import SearchChat from './components/demos/SearchChat';
-import AudioLab from './components/demos/AudioLab';
-import AdminDashboard from './components/AdminDashboard';
-import NewsFeed from './components/demos/NewsFeed';
 import Footer from './components/Footer';
-import GenericPage from './components/GenericPage';
 import AuthModal from './components/AuthModal';
-import PricingPage from './components/PricingPage';
-import PaymentPage from './components/PaymentPage';
 import AdUnit from './components/AdUnit';
+
+// Lazy load heavy components
+const LiveDemo = lazy(() => import('./components/demos/LiveDemo'));
+const VeoDemo = lazy(() => import('./components/demos/VeoDemo'));
+const ImageStudio = lazy(() => import('./components/demos/ImageStudio'));
+const SearchChat = lazy(() => import('./components/demos/SearchChat'));
+const AudioLab = lazy(() => import('./components/demos/AudioLab'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const NewsFeed = lazy(() => import('./components/demos/NewsFeed'));
+const GenericPage = lazy(() => import('./components/GenericPage'));
+const PricingPage = lazy(() => import('./components/PricingPage'));
+const PaymentPage = lazy(() => import('./components/PaymentPage'));
 import { AppView, Tool, NewsArticle, UserProfile } from './types';
 import { generateDirectoryTools } from './services/geminiService';
 import { 
@@ -29,6 +31,16 @@ import {
 import { Menu, Search, AlertCircle, Star, Zap, TrendingUp, Layers, Sparkles } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from './services/supabase';
 import { getCurrentUserProfile, signOut } from './services/authService';
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-zinc-400 text-sm">Loading...</p>
+    </div>
+  </div>
+);
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.HOME);
@@ -486,45 +498,47 @@ const App: React.FC = () => {
                 </div>
               )}
 
-              {currentView === AppView.LIVE_CHAT && <LiveDemo />}
-              {currentView === AppView.VEO_STUDIO && <VeoDemo />}
-              {currentView === AppView.IMAGE_STUDIO && <ImageStudio />}
-              {currentView === AppView.SMART_CHAT && <SearchChat />}
-              {currentView === AppView.AUDIO_LAB && <AudioLab />}
-              {currentView === AppView.LATEST_NEWS && <NewsFeed articles={news} />}
-              {currentView === AppView.PRICING && (
-                <PricingPage 
-                    onSelectPlan={(plan: string) => {
-                        setSelectedPlan(plan);
-                        setCurrentView(AppView.PAYMENT);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }} 
-                />
-              )}
-              {currentView === AppView.PAYMENT && (
-                <PaymentPage 
-                    plan={selectedPlan} 
-                    onBack={() => setCurrentView(AppView.PRICING)}
-                    onComplete={() => setCurrentView(AppView.HOME)} 
-                />
-              )}
-              {currentView === AppView.ADMIN && (
-                  <AdminDashboard 
-                      tools={tools} 
-                      news={news}
-                      user={user}
-                      onAddTool={handleAddTool} 
-                      onUpdateTool={handleUpdateTool}
-                      onAddNews={handleAddNews} 
-                      onUpdateNews={handleUpdateNews}
-                      onDeleteTool={handleDeleteTool}
-                      onDeleteNews={handleDeleteNews}
-                      onBack={() => setCurrentView(AppView.HOME)}
+              <Suspense fallback={<LoadingFallback />}>
+                {currentView === AppView.LIVE_CHAT && <LiveDemo />}
+                {currentView === AppView.VEO_STUDIO && <VeoDemo />}
+                {currentView === AppView.IMAGE_STUDIO && <ImageStudio />}
+                {currentView === AppView.SMART_CHAT && <SearchChat />}
+                {currentView === AppView.AUDIO_LAB && <AudioLab />}
+                {currentView === AppView.LATEST_NEWS && <NewsFeed articles={news} />}
+                {currentView === AppView.PRICING && (
+                  <PricingPage 
+                      onSelectPlan={(plan: string) => {
+                          setSelectedPlan(plan);
+                          setCurrentView(AppView.PAYMENT);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }} 
                   />
-              )}
-              {currentView === AppView.PAGES && (
-                <GenericPage pageId={currentPageId} onBack={() => setCurrentView(AppView.HOME)} />
-              )}
+                )}
+                {currentView === AppView.PAYMENT && (
+                  <PaymentPage 
+                      plan={selectedPlan} 
+                      onBack={() => setCurrentView(AppView.PRICING)}
+                      onComplete={() => setCurrentView(AppView.HOME)} 
+                  />
+                )}
+                {currentView === AppView.ADMIN && (
+                    <AdminDashboard 
+                        tools={tools} 
+                        news={news}
+                        user={user}
+                        onAddTool={handleAddTool} 
+                        onUpdateTool={handleUpdateTool}
+                        onAddNews={handleAddNews} 
+                        onUpdateNews={handleUpdateNews}
+                        onDeleteTool={handleDeleteTool}
+                        onDeleteNews={handleDeleteNews}
+                        onBack={() => setCurrentView(AppView.HOME)}
+                    />
+                )}
+                {currentView === AppView.PAGES && (
+                  <GenericPage pageId={currentPageId} onBack={() => setCurrentView(AppView.HOME)} />
+                )}
+              </Suspense>
             </div>
 
             <Footer onNavigate={handleNavigation} />
